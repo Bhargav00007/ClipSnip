@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
     );
 
     await execPromise(
-      `ffmpeg -i "${clipPath}" -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/0.1:oh-ih" -c:v libx264 -preset ultrafast -crf 23 -c:a aac -strict experimental -y "${paddedYouTubeClip}"`
+      `ffmpeg -i "${clipPath}" -vf "scale=1080:960:force_original_aspect_ratio=increase,crop=1080:960" -c:v libx264 -preset ultrafast -crf 23 -c:a aac -strict experimental -y "${paddedYouTubeClip}"`
     );
 
     // Add padding to the bottom of the Subway Surfer clip
@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
     );
 
     await execPromise(
-      `ffmpeg -i "${trimmedSubwayClip}" -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/0.1:0" -c:v libx264 -preset ultrafast -crf 23 -y "${paddedSubwayClip}"`
+      `ffmpeg -i "${trimmedSubwayClip}" -vf "scale=1080:960:force_original_aspect_ratio=increase,crop=1080:960" -c:v libx264 -preset ultrafast -crf 23 -y "${paddedSubwayClip}"`
     );
 
     // Merge the two clips without padding between them
