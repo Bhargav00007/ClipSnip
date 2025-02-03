@@ -88,9 +88,29 @@ export async function POST(req: NextRequest) {
       `ffmpeg -i "${subwaySurferClip}" -t ${duration} -c:v libx264 -preset ultrafast -crf 23 -y "${trimmedSubwayClip}"`
     );
 
-    // Merge the two clips with a 9:16 aspect ratio
+    // Add padding to the top of the YouTube video
+    const paddedYouTubeClip = path.join(
+      clipsDirectory,
+      `${videoId}_padded_top_${startTime.replace(/:/g, "-")}_${duration}.mp4`
+    );
+
     await execPromise(
-      `ffmpeg -i "${clipPath}" -i "${trimmedSubwayClip}" -filter_complex "[0:v]scale=1080:1920,setsar=1[v0];[1:v]scale=1080:1920,setsar=1[v1];[v0][v1]vstack=inputs=2[v]" -map "[v]" -map 0:a? -c:v libx264 -preset ultrafast -crf 23 -y "${finalMergedClip}"`
+      `ffmpeg -i "${clipPath}" -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/0.1:oh-ih" -c:v libx264 -preset ultrafast -crf 23 -c:a aac -strict experimental -y "${paddedYouTubeClip}"`
+    );
+
+    // Add padding to the bottom of the Subway Surfer clip
+    const paddedSubwayClip = path.join(
+      clipsDirectory,
+      `subway_padded_bottom_${duration}.mp4`
+    );
+
+    await execPromise(
+      `ffmpeg -i "${trimmedSubwayClip}" -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/0.1:0" -c:v libx264 -preset ultrafast -crf 23 -y "${paddedSubwayClip}"`
+    );
+
+    // Merge the two clips without padding between them
+    await execPromise(
+      `ffmpeg -i "${paddedYouTubeClip}" -i "${paddedSubwayClip}" -filter_complex "[0:v][1:v]vstack=inputs=2[v]" -map "[v]" -map 0:a? -c:v libx264 -preset ultrafast -crf 23 -y "${finalMergedClip}"`
     );
 
     // Return the merged clip URL
