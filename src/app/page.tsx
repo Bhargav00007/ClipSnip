@@ -1,6 +1,8 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { IoSparkles } from "react-icons/io5";
+import { TbBrandAmongUs } from "react-icons/tb";
+import { CgPokemon } from "react-icons/cg";
 
 export default function Home() {
   const [youtubeLink, setYoutubeLink] = useState<string>("");
@@ -20,7 +22,7 @@ export default function Home() {
     "Working hard on your clip...",
     "Good things take time...",
     "I hope you didnt provided a huge video!",
-    "Wait, Its a long vidoe...Damn",
+    "Wait, Its a long video...Damn",
     "You are breaking my code",
     "Please provide smaller videos link",
     "Almost broke the code",
@@ -102,16 +104,23 @@ export default function Home() {
     }
   };
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-200 flex flex-col items-center justify-center px-4">
       <div
-        className={`bg-white shadow-md rounded-lg p-6 w-full ${
+        className={`relative bg-white shadow-md rounded-2xl p-6 w-full ${
           clipUrl ? "max-w-4xl" : "max-w-md"
         } flex flex-col md:flex-row gap-8`}
       >
+        {/* Among Us  */}
+        <div className="absolute -top-14 left-3/4 -translate-x-1/2">
+          <TbBrandAmongUs className="text-6xl text-gray-800 drop-shadow-lg pt-5" />
+        </div>
+        <div className="absolute -bottom-14 left-1/4 -translate-x-1/2">
+          <CgPokemon className="text-6xl text-gray-800 drop-shadow-lg pb-5" />
+        </div>
         {/* Form Section */}
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
-            YouTube Clip Generator
+            ClipSnip - Generate YouTube Clips
           </h1>
           <form onSubmit={handleSubmit} className="space-y-4">
             <input
@@ -120,7 +129,7 @@ export default function Home() {
               onChange={(e) => setYoutubeLink(e.target.value)}
               placeholder="Paste YouTube Link"
               required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+              className="w-full px-4 py-2 border rounded-2xl focus:outline-none focus:ring focus:ring-blue-300"
             />
             <input
               type="text"
@@ -128,7 +137,7 @@ export default function Home() {
               onChange={(e) => setStartTime(e.target.value)}
               placeholder="Start Time (e.g., 00:01:00)"
               required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+              className="w-full px-4 py-2 border rounded-2xl focus:outline-none focus:ring focus:ring-blue-300"
             />
             <input
               type="text"
@@ -136,13 +145,13 @@ export default function Home() {
               onChange={(e) => setDuration(e.target.value)}
               placeholder="Duration (e.g., 30)"
               required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+              className="w-full px-4 py-2 border rounded-2xl focus:outline-none focus:ring focus:ring-blue-300"
             />
             <div className="flex gap-4">
               <button
                 type="submit"
                 disabled={loading}
-                className={`flex-1 py-2 text-white rounded-lg transition-all flex items-center justify-center gap-2 ${
+                className={`flex-1 py-2 text-white rounded-2xl transition-all flex items-center justify-center gap-2 ${
                   loading
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-blue-500 hover:bg-blue-600"
@@ -164,7 +173,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={handleCancel}
-                  className="flex-1 py-2 text-white bg-red-500 hover:bg-red-600 rounded-lg"
+                  className="flex-1 py-2 text-white bg-red-500 hover:bg-red-600 rounded-2xl"
                 >
                   Cancel
                 </button>
@@ -172,9 +181,9 @@ export default function Home() {
             </div>
             {loading && (
               <div className="mt-4">
-                <div className="relative w-full bg-gray-200 rounded-lg h-4">
+                <div className="relative w-full bg-gray-200 rounded-2xl h-4">
                   <div
-                    className="absolute top-0 left-0 h-4 bg-blue-500 rounded-lg"
+                    className="absolute top-0 left-0 h-4 bg-blue-500 rounded-2xl"
                     style={{ width: `${progress}%` }}
                   ></div>
                 </div>
@@ -195,7 +204,7 @@ export default function Home() {
             <h2 className="text-lg font-medium text-gray-800 mb-4 text-center">
               Generated Clip
             </h2>
-            <div className="relative w-[250px] aspect-[9/16] bg-black rounded-lg overflow-hidden mx-auto">
+            <div className="relative w-[250px] aspect-[9/16] bg-black rounded-2xl overflow-hidden mx-auto">
               <video
                 src={clipUrl}
                 controls
