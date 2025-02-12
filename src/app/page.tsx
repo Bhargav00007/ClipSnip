@@ -114,9 +114,9 @@ export default function Home() {
         <div className="absolute -top-14 left-3/4 -translate-x-1/2">
           <TbBrandAmongUs className="text-6xl text-gray-800 drop-shadow-lg pt-5" />
         </div>
-        <div className="absolute -bottom-14 left-1/4 -translate-x-1/2">
+        {/* <div className="absolute -bottom-14 left-1/4 -translate-x-1/2">
           <CgPokemon className="text-6xl text-gray-800 drop-shadow-lg pb-5" />
-        </div>
+        </div> */}
         {/* Form Section */}
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
