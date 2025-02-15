@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { IoSparkles } from "react-icons/io5";
 import { TbBrandAmongUs } from "react-icons/tb";
-import { CgPokemon } from "react-icons/cg";
+// import { CgPokemon } from "react-icons/cg";
 
 export default function Home() {
   const [youtubeLink, setYoutubeLink] = useState<string>("");

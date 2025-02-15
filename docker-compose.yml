@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./public/downloads:/app/public/downloads
+      - ./public/subway_surfer.mp4:/app/public/subway_surfer.mp4
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped

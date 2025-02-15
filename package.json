@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "cd venv/scripts && activate && cd ../.. && next dev",
-    "build": "cd venv/scripts && activate && cd ../.. && next build",
-    "start": "cd venv/scripts && activate && cd ../.. && next start",
-    "lint": "cd venv/scripts && activate && cd ../.. && next lint"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
     "fluent-ffmpeg": "^2.1.3",
