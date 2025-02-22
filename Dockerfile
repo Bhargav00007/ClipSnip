@@ -5,8 +5,7 @@ RUN apk add --no-cache \
     ffmpeg \
     python3 \
     py3-pip \
-    --repository=https://dl-cdn.alpinelinux.org/alpine/v3.21/community/ \
-    yt-dlp
+    && pip3 install --no-cache-dir yt-dlp --break-system-packages
 
 # Create directories with proper permissions
 RUN mkdir -p /app/public/downloads && \
@@ -22,4 +21,4 @@ RUN npm run build
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["node", ".next/standalone/server.js"]
