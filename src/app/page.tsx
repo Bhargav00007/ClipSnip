@@ -1,4 +1,5 @@
 "use client";
+import FilesList from "@/components/File";
 import { useState, useRef, useEffect } from "react";
 import { IoSparkles } from "react-icons/io5";
 import { TbBrandAmongUs } from "react-icons/tb";
@@ -104,7 +105,7 @@ export default function Home() {
     }
   };
   return (
-    <div className="min-h-screen bg-gray-200 flex flex-col items-center justify-center px-4">
+    <div className=" bg-gray-200 flex flex-col items-center justify-center px-4">
       <div
         className={`relative bg-white shadow-md rounded-2xl p-6 w-full ${
           clipUrl ? "max-w-4xl" : "max-w-md"
@@ -118,9 +119,10 @@ export default function Home() {
           <CgPokemon className="text-6xl text-gray-800 drop-shadow-lg pb-5" />
         </div> */}
         {/* Form Section */}
+
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
-            ClipSnip - Generate YouTube Clips
+            ClipSnip - Generate YouTube Clips hello world
           </h1>
           <form onSubmit={handleSubmit} className="space-y-4">
             <input
@@ -206,7 +208,8 @@ export default function Home() {
             </h2>
             <div className="relative w-[250px] aspect-[9/16] bg-black rounded-2xl overflow-hidden mx-auto">
               <video
-                src={clipUrl}
+                src={"/api/" + clipUrl}
+                key={clipUrl}
                 controls
                 className="w-full h-full object-contain"
               ></video>
@@ -214,6 +217,7 @@ export default function Home() {
           </div>
         )}
       </div>
+      <FilesList />
     </div>
   );
 }

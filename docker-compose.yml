@@ -6,8 +6,9 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./public/downloads:/app/public/downloads
-      - ./public/subway_surfer.mp4:/app/public/subway_surfer.mp4
+      - ./public/downloads:/app/public/downloads:rw # Add read-write mode
+      - ./public/subway_surfer.mp4:/app/public/subway_surfer.mp4:ro
+      - ./public:/app/public:cached
     environment:
       - NODE_ENV=production
     restart: unless-stopped
