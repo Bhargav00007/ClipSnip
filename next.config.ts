@@ -68,6 +68,9 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true, // ✅ Added to skip ESLint errors
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 9645f05 (Trying to defeat docker issues)
+=======
 >>>>>>> parent of 9645f05 (Trying to defeat docker issues)
 =======
 >>>>>>> parent of 9645f05 (Trying to defeat docker issues)

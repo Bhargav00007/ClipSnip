@@ -34,8 +34,11 @@ const cookiesPath = isProduction
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 export async function POST(req: Request) {
 =======
+=======
+>>>>>>> parent of 9645f05 (Trying to defeat docker issues)
 =======
 >>>>>>> parent of 9645f05 (Trying to defeat docker issues)
 =======
@@ -50,6 +53,9 @@ import { NextRequest } from "next/server";
 export async function POST(req: NextRequest) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 9645f05 (Trying to defeat docker issues)
+=======
 >>>>>>> parent of 9645f05 (Trying to defeat docker issues)
 =======
 >>>>>>> parent of 9645f05 (Trying to defeat docker issues)
@@ -99,6 +105,7 @@ export async function POST(req: NextRequest) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       const ytCommand = [
         `"${ytDlpPath}"`,
         `--cookies "${cookiesPath}"`,
@@ -115,6 +122,9 @@ export async function POST(req: NextRequest) {
       console.log("Executing download command:", ytCommand);
       const { stdout, stderr } = await execPromise(ytCommand);
       console.log("Download logs:", { stdout, stderr });
+=======
+      await execPromise(`yt-dlp -f best -o "${videoPath}" "${youtubeLink}"`);
+>>>>>>> parent of 9645f05 (Trying to defeat docker issues)
 =======
       await execPromise(`yt-dlp -f best -o "${videoPath}" "${youtubeLink}"`);
 >>>>>>> parent of 9645f05 (Trying to defeat docker issues)
@@ -167,6 +177,7 @@ export async function POST(req: NextRequest) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   } catch (error: any) {
     console.error("Full Error Details:", {
       message: error.message,
@@ -198,12 +209,17 @@ export async function POST(req: NextRequest) {
 >>>>>>> parent of 9645f05 (Trying to defeat docker issues)
 =======
 >>>>>>> parent of 9645f05 (Trying to defeat docker issues)
+=======
+>>>>>>> parent of 9645f05 (Trying to defeat docker issues)
   } catch (error) {
     console.error("Error generating merged clip:", error);
     return NextResponse.json(
       { error: "Failed to process the video" },
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 9645f05 (Trying to defeat docker issues)
+=======
 >>>>>>> parent of 9645f05 (Trying to defeat docker issues)
 =======
 >>>>>>> parent of 9645f05 (Trying to defeat docker issues)
