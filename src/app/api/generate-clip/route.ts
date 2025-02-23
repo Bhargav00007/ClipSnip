@@ -12,14 +12,15 @@ const subwaySurferClip = path.join(
   "subway_surfer.mp4"
 );
 
+// Get absolute path to yt-dlp
+const ytDlpPath = path.join(process.cwd(), "public", "bin", "yt-dlp");
+
 // Ensure the directory exists
 if (!fs.existsSync(clipsDirectory)) {
   fs.mkdirSync(clipsDirectory, { recursive: true });
 }
 
-import { NextRequest } from "next/server";
-
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   const { youtubeLink, startTime, duration } = await req.json();
 
   if (!youtubeLink || !startTime || !duration) {
@@ -56,7 +57,9 @@ export async function POST(req: NextRequest) {
     }
 
     if (!fs.existsSync(videoPath)) {
-      await execPromise(`yt-dlp -f best -o "${videoPath}" "${youtubeLink}"`);
+      await execPromise(
+        `"${ytDlpPath}" -f best -o "${videoPath}" "${youtubeLink}"`
+      );
     }
 
     const reencodedVideoPath = path.join(
@@ -107,10 +110,10 @@ export async function POST(req: NextRequest) {
       message: "Merged clip generated successfully",
       clipUrl: `/downloads/${path.basename(finalMergedClip)}`,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error generating merged clip:", error);
     return NextResponse.json(
-      { error: "Failed to process the video" },
+      { error: "Failed to process the video: " + error.message },
       { status: 500 }
     );
   }

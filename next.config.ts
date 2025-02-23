@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
       {
         source: "/downloads/:path",
         headers: [
-          { key: "Access-Control-Allow-Origin", value: "" },
+          { key: "Access-Control-Allow-Origin", value: "*" },
           { key: "Access-Control-Allow-Methods", value: "GET,HEAD,OPTIONS" },
           { key: "Access-Control-Allow-Headers", value: "Range" },
           { key: "Accept-Ranges", value: "bytes" },
@@ -21,7 +21,7 @@ const nextConfig: NextConfig = {
       {
         source: "/test/:path",
         headers: [
-          { key: "Access-Control-Allow-Origin", value: "" },
+          { key: "Access-Control-Allow-Origin", value: "*" },
           { key: "Access-Control-Allow-Methods", value: "GET,HEAD,OPTIONS" },
           { key: "Access-Control-Allow-Headers", value: "Range" },
           { key: "Accept-Ranges", value: "bytes" },
@@ -37,13 +37,12 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   productionBrowserSourceMaps: process.env.NODE_ENV === "development",
-  outputFileTracingRoot: path.join(__dirname),
   experimental: {},
   typescript: {
     ignoreBuildErrors: true,
   },
   eslint: {
-    ignoreDuringBuilds: true, // ✅ Added to skip ESLint errors
+    ignoreDuringBuilds: true,
   },
 };
 
