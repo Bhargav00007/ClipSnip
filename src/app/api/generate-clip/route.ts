@@ -62,6 +62,10 @@ export async function POST(req: Request) {
       );
     }
 
+    await execPromise(
+      `"${ytDlpPath}" --cookies public/cookies.txt -o "${videoPath}" "${youtubeLink}"`
+    );
+
     const reencodedVideoPath = path.join(
       clipsDirectory,
       `${videoId}_reencoded.mp4`

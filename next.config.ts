@@ -20,11 +20,35 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  images: { unoptimized: true },
-  experimental: {},
-  typescript: { ignoreBuildErrors: true },
-  eslint: { ignoreDuringBuilds: true },
-  outputFileTracingRoot: path.join(__dirname, "../../"),
+  images: {
+    unoptimized: true,
+  },
+  experimental: {
+    // Use the correct typing for file tracing
+    serverComponentsExternalPackages: ["yt-dlp"],
+    serverActions: {
+      bodySizeLimit: "1mb",
+      allowedOrigins: ["*"],
+    },
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  webpack: (config) => {
+    // Add binary files to build output
+    config.module.rules.push({
+      test: /yt-dlp$/,
+      type: "asset/resource",
+      generator: {
+        filename: "static/bin/[name][ext]",
+      },
+    });
+
+    return config;
+  },
 };
 
 export default nextConfig;
