@@ -9,9 +9,26 @@ const nextConfig: NextConfig = {
       {
         source: "/downloads/:path*",
         headers: [
-          { key: "Access-Control-Allow-Origin", value: "*" },
+          { key: "Access-Control-Allow-Origin", value: "" },
           { key: "Access-Control-Allow-Methods", value: "GET,HEAD,OPTIONS" },
+<<<<<<< HEAD
           { key: "Access-Control-Allow-Headers", value: "Content-Type,Range" },
+=======
+          { key: "Access-Control-Allow-Headers", value: "Range" },
+          { key: "Accept-Ranges", value: "bytes" },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/test/:path",
+        headers: [
+          { key: "Access-Control-Allow-Origin", value: "" },
+          { key: "Access-Control-Allow-Methods", value: "GET,HEAD,OPTIONS" },
+          { key: "Access-Control-Allow-Headers", value: "Range" },
+>>>>>>> parent of 9645f05 (Trying to defeat docker issues)
           { key: "Accept-Ranges", value: "bytes" },
           {
             key: "Cache-Control",
@@ -24,6 +41,7 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+<<<<<<< HEAD
   outputFileTracingIncludes: {
     "/api/generate-clip": [
       "./public/cookies/cookies.txt",
@@ -39,6 +57,16 @@ const nextConfig: NextConfig = {
       },
     });
     return config;
+=======
+  productionBrowserSourceMaps: process.env.NODE_ENV === "development",
+  outputFileTracingRoot: path.join(__dirname),
+  experimental: {},
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true, // ✅ Added to skip ESLint errors
+>>>>>>> parent of 9645f05 (Trying to defeat docker issues)
   },
 };
 

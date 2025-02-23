@@ -31,7 +31,18 @@ const cookiesPath = isProduction
   }
 );
 
+<<<<<<< HEAD
 export async function POST(req: Request) {
+=======
+// Ensure the directory exists
+if (!fs.existsSync(clipsDirectory)) {
+  fs.mkdirSync(clipsDirectory, { recursive: true });
+}
+
+import { NextRequest } from "next/server";
+
+export async function POST(req: NextRequest) {
+>>>>>>> parent of 9645f05 (Trying to defeat docker issues)
   const { youtubeLink, startTime, duration } = await req.json();
 
   try {
@@ -73,6 +84,7 @@ export async function POST(req: Request) {
 
     // Download video with enhanced options
     if (!fs.existsSync(videoPath)) {
+<<<<<<< HEAD
       const ytCommand = [
         `"${ytDlpPath}"`,
         `--cookies "${cookiesPath}"`,
@@ -89,6 +101,9 @@ export async function POST(req: Request) {
       console.log("Executing download command:", ytCommand);
       const { stdout, stderr } = await execPromise(ytCommand);
       console.log("Download logs:", { stdout, stderr });
+=======
+      await execPromise(`yt-dlp -f best -o "${videoPath}" "${youtubeLink}"`);
+>>>>>>> parent of 9645f05 (Trying to defeat docker issues)
     }
 
     // Video processing pipeline
@@ -129,6 +144,7 @@ export async function POST(req: Request) {
       message: "Merged clip generated successfully",
       clipUrl: `/downloads/${path.basename(finalMergedClip)}`,
     });
+<<<<<<< HEAD
   } catch (error: any) {
     console.error("Full Error Details:", {
       message: error.message,
@@ -155,6 +171,12 @@ export async function POST(req: Request) {
           errorCode: error.code,
         },
       },
+=======
+  } catch (error) {
+    console.error("Error generating merged clip:", error);
+    return NextResponse.json(
+      { error: "Failed to process the video" },
+>>>>>>> parent of 9645f05 (Trying to defeat docker issues)
       { status: 500 }
     );
   }
