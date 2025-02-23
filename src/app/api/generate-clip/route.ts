@@ -5,48 +5,63 @@ import path from "path";
 import fs from "fs";
 
 const execPromise = promisify(exec);
-const clipsDirectory = path.join(process.cwd(), "public", "downloads");
-const subwaySurferClip = path.join(
-  process.cwd(),
-  "public",
-  "subway_surfer.mp4"
-);
 
-const ytDlpPath = path.join(process.cwd(), "public", "bin", "yt-dlp");
-const cookiesPath = path.join(
-  process.cwd(),
-  "public",
-  "cookies",
-  "cookies.txt"
-);
+// Environment configuration
+const isProduction = process.env.NODE_ENV === "production";
+const basePath = process.cwd();
 
-if (!fs.existsSync(clipsDirectory)) {
-  fs.mkdirSync(clipsDirectory, { recursive: true });
-}
+// Path configuration
+const clipsDirectory = path.join(basePath, "public", "downloads");
+const subwaySurferClip = path.join(basePath, "public", "subway_surfer.mp4");
+
+const ytDlpPath = isProduction
+  ? path.join(basePath, ".next", "static", "bin", "yt-dlp")
+  : path.join(basePath, "public", "bin", "yt-dlp");
+
+const cookiesPath = isProduction
+  ? path.join(basePath, ".next", "static", "cookies", "cookies.txt")
+  : path.join(basePath, "public", "cookies", "cookies.txt");
+
+// Ensure required directories exist
+[clipsDirectory, path.dirname(ytDlpPath), path.dirname(cookiesPath)].forEach(
+  (dir) => {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  }
+);
 
 export async function POST(req: Request) {
   const { youtubeLink, startTime, duration } = await req.json();
 
   try {
-    // Validation checks
+    // Debugging logs
+    console.log("Environment:", process.env.NODE_ENV);
+    console.log("YT-DLP Path:", ytDlpPath);
+    console.log("Cookies Path:", cookiesPath);
+    console.log("YT-DLP Exists:", fs.existsSync(ytDlpPath));
+    console.log("Cookies Exist:", fs.existsSync(cookiesPath));
+
+    // Validation
     if (!youtubeLink || !startTime || !duration) {
-      throw new Error("YouTube link, start time, and duration are required");
+      throw new Error(
+        "Missing required parameters: YouTube link, start time, duration"
+      );
     }
 
-    // Verify cookies exist
     if (!fs.existsSync(cookiesPath)) {
-      throw new Error("Authentication cookies not found");
+      throw new Error(`Cookies file not found at: ${cookiesPath}`);
     }
 
     const videoId = new URL(youtubeLink).searchParams.get("v");
-    if (!videoId) throw new Error("Invalid YouTube link");
+    if (!videoId) throw new Error("Invalid YouTube URL format");
 
-    const videoPath = path.join(clipsDirectory, `${videoId}.mp4`);
     const finalMergedClip = path.join(
       clipsDirectory,
       `${videoId}_final_merged_${startTime.replace(/:/g, "-")}_${duration}.mp4`
     );
 
+    // Check for existing clip
     if (fs.existsSync(finalMergedClip)) {
       return NextResponse.json({
         message: "Merged clip already exists",
@@ -54,56 +69,91 @@ export async function POST(req: Request) {
       });
     }
 
+    const videoPath = path.join(clipsDirectory, `${videoId}.mp4`);
+
     // Download video with enhanced options
     if (!fs.existsSync(videoPath)) {
-      await execPromise(
-        `"${ytDlpPath}" \
-        --cookies "${cookiesPath}" \
-        --force-ipv4 \
-        --geo-bypass \
-        --referer "https://www.youtube.com" \
-        --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" \
-        --no-check-certificate \
-        --verbose \
-        -o "${videoPath}" \
-        "${youtubeLink}"`
-      );
+      const ytCommand = [
+        `"${ytDlpPath}"`,
+        `--cookies "${cookiesPath}"`,
+        "--force-ipv4",
+        "--geo-bypass",
+        "--referer 'https://www.youtube.com'",
+        "--user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'",
+        "--no-check-certificate",
+        "--verbose",
+        `-o "${videoPath}"`,
+        `"${youtubeLink}"`,
+      ].join(" ");
+
+      console.log("Executing download command:", ytCommand);
+      const { stdout, stderr } = await execPromise(ytCommand);
+      console.log("Download logs:", { stdout, stderr });
     }
 
-    // [Keep existing processing steps...]
-    // Add debug logging for downloaded file
-    console.log(
-      "Video downloaded successfully. Size:",
-      fs.statSync(videoPath).size
-    );
+    // Video processing pipeline
+    const processingSteps = [
+      {
+        name: "Re-encoding",
+        command: `ffmpeg -i "${videoPath}" -c:v libx264 -preset ultrafast -crf 23 -c:a aac -strict experimental -y "${videoPath}_reencoded.mp4"`,
+      },
+      {
+        name: "Trimming",
+        command: `ffmpeg -ss ${startTime} -i "${videoPath}_reencoded.mp4" -t ${duration} -c:v copy -c:a copy -y "${videoPath}_trimmed.mp4"`,
+      },
+      {
+        name: "Subway Surfers Loop",
+        command: `ffmpeg -stream_loop -1 -i "${subwaySurferClip}" -t ${duration} -c:v copy -an -y "${videoPath}_subway_loop.mp4"`,
+      },
+      {
+        name: "Merge Clips",
+        command: `ffmpeg -i "${videoPath}_trimmed.mp4" -i "${videoPath}_subway_loop.mp4" -filter_complex "[0:v][1:v]vstack=inputs=2[v]" -map "[v]" -map 0:a? -c:v libx264 -preset ultrafast -crf 23 -y "${finalMergedClip}"`,
+      },
+    ];
 
-    // Rest of your FFmpeg processing code remains the same
-    const reencodedVideoPath = path.join(
-      clipsDirectory,
-      `${videoId}_reencoded.mp4`
-    );
-    await execPromise(
-      `ffmpeg -i "${videoPath}" -c:v libx264 -preset ultrafast -crf 23 -c:a aac -strict experimental -y "${reencodedVideoPath}"`
-    );
+    for (const step of processingSteps) {
+      console.log(`Starting step: ${step.name}`);
+      const { stdout, stderr } = await execPromise(step.command);
+      console.log(`Completed ${step.name}`, { stdout, stderr });
+    }
 
-    // [Keep all other FFmpeg commands...]
+    // Cleanup temporary files
+    [".mp4_reencoded", "_trimmed", "_subway_loop"].forEach((suffix) => {
+      const tempFile = `${videoPath}${suffix}.mp4`;
+      if (fs.existsSync(tempFile)) {
+        fs.unlinkSync(tempFile);
+      }
+    });
 
     return NextResponse.json({
       message: "Merged clip generated successfully",
       clipUrl: `/downloads/${path.basename(finalMergedClip)}`,
     });
   } catch (error: any) {
-    console.error("Error details:", {
+    console.error("Full Error Details:", {
       message: error.message,
       stack: error.stack,
-      cmd: error.cmd,
+      command: error.cmd,
       stderr: error.stderr,
+      stdout: error.stdout,
+      environment: {
+        NODE_ENV: process.env.NODE_ENV,
+        paths: {
+          ytDlpPath,
+          cookiesPath,
+          cwd: process.cwd(),
+        },
+      },
     });
 
     return NextResponse.json(
       {
-        error: "Failed to process video",
-        details: error.stderr || error.message,
+        error: "Video processing failed",
+        details: {
+          message: error.message,
+          stderr: error.stderr?.slice(0, 200), // Truncate long errors
+          errorCode: error.code,
+        },
       },
       { status: 500 }
     );

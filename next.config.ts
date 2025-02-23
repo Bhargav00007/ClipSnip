@@ -24,40 +24,20 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  experimental: {
-    // Only valid experimental flags
-    serverActions: {
-      bodySizeLimit: "2mb",
-      allowedOrigins: [
-        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
-      ],
-    },
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
+  outputFileTracingIncludes: {
+    "/api/generate-clip": [
+      "./public/cookies/cookies.txt",
+      "./public/bin/yt-dlp",
+    ],
   },
   webpack: (config) => {
-    // Asset handling for binaries and cookies
-    config.module.rules.push(
-      {
-        test: /yt-dlp$/,
-        type: "asset/resource",
-        generator: {
-          filename: "static/bin/[name][ext]",
-        },
+    config.module.rules.push({
+      test: /cookies\.txt$/,
+      type: "asset/resource",
+      generator: {
+        filename: "static/cookies/[name][ext]",
       },
-      {
-        test: /cookies\.txt$/,
-        type: "asset/resource",
-        generator: {
-          filename: "static/cookies/[name][ext]",
-        },
-      }
-    );
-
+    });
     return config;
   },
 };
