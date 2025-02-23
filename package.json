@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prebuild": "mkdir -p public/bin && (wget https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -O public/bin/yt-dlp || curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o public/bin/yt-dlp) && chmod +x public/bin/yt-dlp"
+    "prebuild": "mkdir -p public/bin public/cookies && wget https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -O public/bin/yt-dlp && chmod +x public/bin/yt-dlp"
   },
   "dependencies": {
     "fluent-ffmpeg": "^2.1.3",

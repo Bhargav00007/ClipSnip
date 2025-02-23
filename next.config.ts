@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  serverExternalPackages: ["yt-dlp"], // Moved from experimental
   async headers() {
     return [
       {
@@ -24,11 +25,12 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   experimental: {
-    // Use the correct typing for file tracing
-    serverComponentsExternalPackages: ["yt-dlp"],
+    // Only valid experimental flags
     serverActions: {
-      bodySizeLimit: "1mb",
-      allowedOrigins: ["*"],
+      bodySizeLimit: "2mb",
+      allowedOrigins: [
+        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+      ],
     },
   },
   typescript: {
@@ -38,14 +40,23 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   webpack: (config) => {
-    // Add binary files to build output
-    config.module.rules.push({
-      test: /yt-dlp$/,
-      type: "asset/resource",
-      generator: {
-        filename: "static/bin/[name][ext]",
+    // Asset handling for binaries and cookies
+    config.module.rules.push(
+      {
+        test: /yt-dlp$/,
+        type: "asset/resource",
+        generator: {
+          filename: "static/bin/[name][ext]",
+        },
       },
-    });
+      {
+        test: /cookies\.txt$/,
+        type: "asset/resource",
+        generator: {
+          filename: "static/cookies/[name][ext]",
+        },
+      }
+    );
 
     return config;
   },
