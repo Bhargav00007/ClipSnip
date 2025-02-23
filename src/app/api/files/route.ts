@@ -1,9 +1,18 @@
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server"; // Explicitly import NextRequest
 import path from "path";
 import fs from "fs";
 
-export async function GET() {
+// Define the params type explicitly
+interface RouteParams {
+  params: {
+    file: string;
+  };
+}
+
+export async function GET(request: NextRequest, { params }: RouteParams) {
   const downloadsPath = path.join(process.cwd(), "public", "downloads");
+  const filePath = path.join(downloadsPath, params.file);
 
   try {
     if (!fs.existsSync(downloadsPath)) {
@@ -13,15 +22,27 @@ export async function GET() {
       );
     }
 
-    const files = fs
-      .readdirSync(downloadsPath)
-      .filter((file) => file !== ".gitkeep");
-    console.log;
-    return NextResponse.json({ files });
+    if (!fs.existsSync(filePath)) {
+      return NextResponse.json(
+        { error: `File '${params.file}' not found` },
+        { status: 404 }
+      );
+    }
+
+    const stats = fs.statSync(filePath);
+    if (!stats.isFile() || params.file === ".gitkeep") {
+      return NextResponse.json(
+        { error: `Invalid file '${params.file}'` },
+        { status: 400 }
+      );
+    }
+
+    console.log("File requested:", params.file);
+    return NextResponse.json({ file: params.file, size: stats.size });
   } catch (error) {
-    console.error("Error reading downloads folder:", error);
+    console.error(`Error accessing file '${params.file}':`, error);
     return NextResponse.json(
-      { error: "Failed to read files" },
+      { error: "Failed to process file request" },
       { status: 500 }
     );
   }
